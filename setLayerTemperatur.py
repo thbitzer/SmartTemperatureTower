@@ -11,7 +11,10 @@
 #
 
 import argparse, sys
+import os
 
+cmdOpenScad = "C:\Program Files\OpenSCAD\openscad.com"
+cmdPrusaSlicer = "C:\Program Files\Prusa3D\PrusaSlicer\prusa-slicer-console.exe"
 
 parser = argparse.ArgumentParser(description="Sets the proper temperatures to the corresponding layers of a gcode file exported from Slic3r. This allows the temperature tower to have different temperatures per block.")
 requiredNamed = parser.add_argument_group('required arguments')
@@ -28,6 +31,9 @@ print("gcodeFile: \"{}\"".format(args.gcodeFile))
 
 outFile="OUT_" + args.gcodeFile;
 print("outFile: \"{}\"".format(outFile))
+
+rc = os.system( "\"" + cmdOpenScad + "\" -o test_petg.stl -D tfirst=240 -D tlast=210 -D tstep=5 .\parameterized_STTMod.scad")
+exit(0)
 
 # parse gcode files
 try:
