@@ -1,0 +1,3 @@
+& 'C:\Program Files\OpenSCAD\openscad.com' -o test_petg.stl -D tfirst=240 -D tlast=210 -D tstep=5 .\parameterized_STTMod.scad
+& "C:\Program Files\Prusa3D\PrusaSlicer\prusa-slicer-console.exe" --printer-technology FFF --center 120,120 --before-layer-gcode ";LAYER:[layer_num]" --export-gcode --loglevel 1 --output test_petg.gcode .\test_petg.stl
+python .\setLayerTemperatur.py -s 240 -e 210 -t 5 -f test_petg.gcode
