@@ -14,8 +14,8 @@ tstep=2;
 
 tstep1 = tfirst>tlast ?  abs(tstep)*-1 : abs(tstep);
 // Instantiate the "base" and move it to origin
-translate([-113,-100,0])
-import("SmartTemperatureTower_Stand_fixed.stl");
+translate([-9,-9,0])
+import("SmartTemperatureTower_Stand.stl");
 
 // Define module for the "floor"
 module TempFloor(temp){
