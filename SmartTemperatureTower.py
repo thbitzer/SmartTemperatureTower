@@ -65,21 +65,30 @@ requiredNamed = parser.add_argument_group('required arguments')
 requiredNamed.add_argument('-s', '--startTemp',   type=int, help="Temperature of the first (lowest) block.", required=True)
 requiredNamed.add_argument('-e', '--endTemp',     type=int, help="Temperature of the last (highest) block.", required=True)
 requiredNamed.add_argument('-t', '--tempStep',    type=int, help="Temperature change between blocks.",       required=True)
-requiredNamed.add_argument('-f', '--gcodePrefix',           help="Prefix for gcode file",                    required=False)
+requiredNamed.add_argument('-p', '--gcodePrefix',           help="Prefix for gcode file",                    required=False)
 args = parser.parse_args()
+
+
 
 # Get name for gcode file
 if args.gcodePrefix == None:
     gcodePrefix = "CalibrationTower"
 else:
     gcodePrefix = args.gcodePrefix
+
+    # We don't want a full filename with extension for the -p (prefix) parameter
+    if re.search('\\.', args.gcodePrefix):
+        ext=re.sub('^.*(\\..*)$', '\\1', args.gcodePrefix)
+        print("ERROR: The -p / --gcodePrefix parameter contains an extension ("+ext+").")
+        exit(1)
+        
 gcodeFile = gcodePrefix + "-" + str(args.startTemp) + "-" + str(args.endTemp) + "-" + str(args.tempStep) + ".gcode"
 
 print("startTemp: {}".format(args.startTemp))
 print("endTemp:   {}".format(args.endTemp))
 print("tempStep:  {}".format(args.tempStep))
 print("gcodeFile: {}".format(gcodeFile))
-
+exit(0)
 
 ###
 # STEP 1: Create STL file of Calibration Tower using OpenSCAD
