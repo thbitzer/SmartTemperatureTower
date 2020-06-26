@@ -28,3 +28,5 @@ Copy the content of this repository into an empty directory and start the execut
 * Execute: python SmartTemperatureTower.py -s 190 -e 240 -t 5
 
 If all goes well, a file named "CalibrationTower-190-240-5.gcode" will be created. It can be uploaded to your 3D-printer.
+
+![Image of the result](https://github.com/thbitzer/SmartTemperatureTower/raw/master/img/SmartTemperatureTower.jpg "Result")

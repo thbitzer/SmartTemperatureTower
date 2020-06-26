@@ -6,12 +6,13 @@
 # ;CT_LAYER:[layer_num]   - where [layer_num] is replaced by the layer number
 #
 # example Usage: 
-#           ./setLayerTemperatur.py -s 215 -e 260 -t 5
+#           ./SmartTemperatureTower.py -s 215 -e 260 -t 5
 #
 
 import argparse
 import configparser
 from os.path import isfile
+import os
 import re
 import subprocess
 import sys
@@ -21,7 +22,7 @@ cmdOpenScad = "C:\\Program Files\\OpenSCAD\\openscad.com"
 cmdPrusaSlicer = "C:\\Program Files\\Prusa3D\\PrusaSlicer\\prusa-slicer-console.exe"
 
 # Open Prusa-Slicer -> Help -> Show Configuration Folder
-iniPSD = "C:\\Users\\thbitzer\\AppData\\Roaming\\PrusaSlicer"
+iniPSD = os.environ["APPDATA"]+"\\PrusaSlicer"
 
 # All required data files we need to build a Calibration Tower
 requiredFiles = {
