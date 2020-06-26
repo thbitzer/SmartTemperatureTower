@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
 # This script extracts settings from the gcode comments shown below.
-# The gcode comments should be added to the filament settings start G-Code in Slic3r
+# The gcode comments should be added to the filament settings start G-Code in Prusa-Slicer
 # Each layer should begin with
-# ;LAYER:[layer_num]   - where [layer_num] is replaced by the layer number
+# ;CT_LAYER:[layer_num]   - where [layer_num] is replaced by the layer number
 #
 # example Usage: 
-#           ./setLayerTemperatur.py -s 215 -e 260 -t 5 -f tempTower_PETG2.gcode
-#   or:     ./setLayerTemperatur.py --startTemp=215 --endTemp=260 --tempStep=5 --gcodeFile=tempTower_PETG2.gcode
+#           ./setLayerTemperatur.py -s 215 -e 260 -t 5
 #
 
 import argparse
@@ -60,7 +59,7 @@ if not checkRequiredFiles():
     print()
     exit(1)
 
-parser = argparse.ArgumentParser(description="Sets the proper temperatures to the corresponding layers of a gcode file exported from Slic3r. This allows the temperature tower to have different temperatures per block.")
+parser = argparse.ArgumentParser(description="Create a gcode file to print a Heat Calibration Tower.")
 requiredNamed = parser.add_argument_group('required arguments')
 requiredNamed.add_argument('-s', '--startTemp',   type=int, help="Temperature of the first (lowest) block.", required=True)
 requiredNamed.add_argument('-e', '--endTemp',     type=int, help="Temperature of the last (highest) block.", required=True)
@@ -88,7 +87,6 @@ print("startTemp: {}".format(args.startTemp))
 print("endTemp:   {}".format(args.endTemp))
 print("tempStep:  {}".format(args.tempStep))
 print("gcodeFile: {}".format(gcodeFile))
-exit(0)
 
 ###
 # STEP 1: Create STL file of Calibration Tower using OpenSCAD
@@ -136,7 +134,7 @@ nextTemp=args.startTemp
 ###
 # STEP 3: Insert M104 (set temp) on floor changes
 ###
-print("* Create GCODE file ", end="", flush=True)
+print("* Add M104 commands ", end="", flush=True)
 gcodeInput = open("CT_Temp.gcode", 'r')
 gcodeOutput = open(gcodeFile, 'w')
 for LINE in gcodeInput:
