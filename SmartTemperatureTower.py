@@ -17,6 +17,8 @@ import re
 import subprocess
 import sys
 
+### Defaults section
+
 # Path to OpenSCAD and Prusa Slicer
 cmdOpenScad = "C:\\Program Files\\OpenSCAD\\openscad.com"
 cmdPrusaSlicer = "C:\\Program Files\\Prusa3D\\PrusaSlicer\\prusa-slicer-console.exe"
@@ -31,6 +33,15 @@ requiredFiles = {
     "stlStand": "SmartTemperatureTower_Stand.stl"
 }
 
+### Functions
+
+# Get option from ini file. If not present or empty, use default
+def getOpt(iniSect, name, default):
+    if name in iniSect and iniSect[name] != "":
+        return(iniSect[name])
+    else:
+        return(default)
+        
 # Check if all required data files are present
 def checkRequiredFiles():
 
@@ -50,6 +61,18 @@ def getSTLZSize(filename):
 ###
 # MAIN
 ###
+
+### Check for config file and override defaults if desired
+
+# Read configuration
+cfgFile="SmartTemperatureTower.ini"
+if isfile(cfgFile):
+    cfg = configparser.ConfigParser()
+    cfg.read(cfgFile)
+
+    cmdOpenScad = getOpt(cfg["Path"], "openscad", cmdOpenScad)
+    cmdPrusaSlicer = getOpt(cfg["Path"], "prusa_slicer", cmdPrusaSlicer)
+    iniPSD = getOpt(cfg["Path"], "prusa_slicer_ini", iniPSD)
 
 if not checkRequiredFiles():
     print()
