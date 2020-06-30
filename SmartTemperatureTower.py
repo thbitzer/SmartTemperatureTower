@@ -11,7 +11,7 @@
 
 import argparse
 import configparser
-from os.path import isfile
+from os.path import isfile,isdir
 import os
 import re
 import subprocess
@@ -58,6 +58,14 @@ def getSTLZSize(filename):
     ini.read_string(sp.stdout)
     return(ini[filename]["size_z"])
 
+# Print error messaga about missing tools or profiles
+def toolNotFound(toolname,toolpath):
+    print("ERROR: The "+toolname+" is not available on the system.")
+    print("")
+    print("       Expected at:")
+    print("       "+toolpath)
+
+
 ###
 # MAIN
 ###
@@ -73,6 +81,52 @@ if isfile(cfgFile):
     cmdOpenScad = getOpt(cfg["Path"], "openscad", cmdOpenScad)
     cmdPrusaSlicer = getOpt(cfg["Path"], "prusa_slicer", cmdPrusaSlicer)
     iniPSD = getOpt(cfg["Path"], "prusa_slicer_ini", iniPSD)
+
+    printProfile = getOpt(cfg["Profile"], "print", "")
+    printerProfile = getOpt(cfg["Profile"], "printer", "")
+    filamentProfile = getOpt(cfg["Profile"], "filament", "")
+
+# Check configured paths
+if not isfile(cmdOpenScad):
+    toolNotFound("OpenSCAD tool",cmdPrusaSlicer)
+    exit(1)
+if not isfile(cmdPrusaSlicer):
+    toolNotFound("Prusa-Slicer tool",cmdPrusaSlicer)
+    exit(1)
+if not isdir(iniPSD):
+    toolNotFound("Prusa-Slicer profile dir", iniPSD)
+    exit(1)
+
+# Check configured profiles
+profiles = []
+if printProfile != "":
+    printProfile = iniPSD+"\\print\\"+printProfile
+    if not isfile(printProfile):
+        toolNotFound("Prusa-Slicer print profile", printProfile)
+    else:
+        profiles.append(printProfile)
+if printerProfile != "":
+    printerProfile = iniPSD+"\\printer\\"+printerProfile
+    if not isfile(printerProfile):
+        toolNotFound("Prusa-Slicer printer profile", printerProfile)
+    else:
+        profiles.append(printerProfile)
+if filamentProfile != "":
+    filamentProfile = iniPSD+"\\filament\\"+filamentProfile
+    if not isfile(filamentProfile):
+        toolNotFound("Prusa-Slicer filament profile", filamentProfile)
+    else:
+        profiles.append(filamentProfile)
+
+loadProfiles = ""
+loadProfilesList = []
+for profile in profiles:
+    loadProfilesList.append("--load")
+    loadProfilesList.append(profile)
+    if loadProfiles == "":
+        loadProfiles = "--load "+profile
+    else:
+        loadProfiles += " --load "+profile
 
 if not checkRequiredFiles():
     print()
@@ -116,6 +170,8 @@ print("gcodeFile: {}".format(gcodeFile))
 # STEP 1: Create STL file of Calibration Tower using OpenSCAD
 ###
 print("* Create STL file ", end="", flush=True)
+if isfile("CT_Temp.stl"):
+    os.remove("CT_Temp.stl")
 rc = subprocess.run( [ cmdOpenScad, "-o", "CT_Temp.stl",
                        "-D", "tfirst=" + str(args.startTemp), "-D", "tlast=" + str(args.endTemp), 
                        "-D", "tstep=" + str(args.tempStep), requiredFiles["scadFile"] ],
@@ -133,12 +189,12 @@ print("- OK")
 # STEP 2: Create GCODE file using Prusa Slicer
 ###
 print("* Create GCODE file ", end="", flush=True)
-rc = subprocess.run( [ cmdPrusaSlicer, "--printer-technology", "FFF",
+if isfile("CT_Temp.gcode"):
+    os.remove("CT_Temp.gcode")
+rc = subprocess.run( [ cmdPrusaSlicer, "--loglevel", "2", "--printer-technology", "FFF",
                                        "--center", "120,120", 
                                        "--before-layer-gcode", ";CT_LAYER:[layer_num]",
-                                       "--load", iniPSD+"\\printer\\Anet A8 Standard (advanced priming).ini",
-                                       "--load", iniPSD+"\\print\\Anet A8 Standard.ini",
-                                       "--load", iniPSD+"\\filament\\PETG - Light Green.ini",
+                                       *loadProfilesList,
                                        "--export-gcode", "--loglevel", "1",
                                        "--output", "CT_Temp.gcode", "CT_Temp.stl" ],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True )

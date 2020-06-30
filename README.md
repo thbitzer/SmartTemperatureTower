@@ -26,6 +26,8 @@ Copy the content of this repository into an empty directory and start the execut
 
 Enter the paths to OpenSCAD, Prusa-Slicer and to Prusa-Slicer's ini files (Open Prusa-Slicer -> Help -> Show Configuration Folder) into the file "SmartTemperatureTower.ini". The file already contains some standard defaults.
 
+In the same ini file (under the [Profile] section), there are 3 Prusa-Slicer profiles to specify (printer, print and filament). All 3 of them are optional, but it is strongly recommended to use them for the temperature tower.
+
 ## Usage:
 
 * Open a terminal window and change into the directory where the repo was downloaded.
