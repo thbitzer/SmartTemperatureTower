@@ -161,10 +161,15 @@ else:
         
 gcodeFile = gcodePrefix + "-" + str(args.startTemp) + "-" + str(args.endTemp) + "-" + str(args.tempStep) + ".gcode"
 
-print("startTemp: {}".format(args.startTemp))
-print("endTemp:   {}".format(args.endTemp))
-print("tempStep:  {}".format(args.tempStep))
-print("gcodeFile: {}".format(gcodeFile))
+print()
+print("Start Temperature: {}".format(args.startTemp))
+print("End Temperature:   {}".format(args.endTemp))
+print("Temperature Step:  {}".format(args.tempStep))
+print("Printer Profile:   {}".format(printerProfile))
+print("Print Profile:     {}".format(printProfile))
+print("Filament Profile:  {}".format(filamentProfile))
+print("gcodeFile:         {}".format(gcodeFile))
+print()
 
 ###
 # STEP 1: Create STL file of Calibration Tower using OpenSCAD
