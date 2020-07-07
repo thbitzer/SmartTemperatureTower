@@ -139,13 +139,41 @@ if not checkRequiredFiles():
 
 parser = argparse.ArgumentParser(description="Create a gcode file to print a Heat Calibration Tower.")
 requiredNamed = parser.add_argument_group('required arguments')
-requiredNamed.add_argument('-s', '--startTemp',   type=int, help="Temperature of the first (lowest) block.", required=True)
-requiredNamed.add_argument('-e', '--endTemp',     type=int, help="Temperature of the last (highest) block.", required=True)
-requiredNamed.add_argument('-t', '--tempStep',    type=int, help="Temperature change between blocks.",       required=True)
-requiredNamed.add_argument('-p', '--gcodePrefix',           help="Prefix for gcode file",                    required=False)
+requiredNamed.add_argument('-s', '--startTemp', type=int, help="Temperature of the first (lowest) block.")
+requiredNamed.add_argument('-e', '--endTemp', type=int, help="Temperature of the last (highest) block.")
+requiredNamed.add_argument('-t', '--tempStep', type=int, help="Temperature change between blocks.")
+parser.add_argument('-p', '--gcodePrefix', help="Prefix for gcode file")
+parser.add_argument('-l', '--profiles', nargs='?', help="List printer profiles (PROFILES=print, printer, filament)")
 args = parser.parse_args()
 
 
+# List printer profiles
+if args.profiles != None:
+    validIniDirs=["printer","print","filament"]
+    if not args.profiles in validIniDirs:
+        print()
+        print("ERROR: Unknown ini path: "+args.profiles)
+        print()
+        print("       Valid paths are:")
+        for path in validIniDirs:
+            print("       * "+path)
+        print()
+        sys.exit(1)
+    path=iniPSD+"\\"+args.profiles
+    iniarr = os.listdir(path)
+    print()
+    print("Printer profiles available in directory:")
+    print(path)
+    print()
+    for ini in iniarr:
+        print("* "+ini)
+    print()
+    sys.exit(0)
+
+# Check that all required arguments are given
+if args.startTemp == None or args.endTemp == None or args.tempStep == None:
+    parser.print_help()
+    sys.exit(1)
 
 # Get name for gcode file
 if args.gcodePrefix == None:
