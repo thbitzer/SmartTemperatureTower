@@ -4,8 +4,8 @@ This tool can be used to create GCODE for a 3D-Printer in order to print a heat 
 
 ## How it works
 
-1. The main Python script "SmartTemperatureTower.py" runs OpenSCAD with the user-supplied parameters and creates an STL file out of file "SmartTemperatureTower_Stand.stl" and "SmartTemperatureTower_TempFloor.stl". 
-2. The resulting STL file is being converted into a GCODE file using the Prusa Slicer. At each Layer change, a marker is inserted to identify the starting point of a layer.
+1. The main Python script "SmartTemperatureTower.py" runs OpenSCAD with the user-supplied parameters and creates a resulting STL file out of "SmartTemperatureTower_Stand.stl" and "SmartTemperatureTower_TempFloor.stl". 
+2. That STL file is being converted into a GCODE file using the Prusa Slicer. At each Layer change, a marker is inserted to identify the starting point of that layer.
 3. After that, the Python script parses the GCODE and inserts "M104" GCODE commands at the layer start markers of new floors of the temperature tower.
 
 ## Requirements
@@ -18,9 +18,11 @@ This script has been tested with:
 
 Although this script has been developed and tested on Windows, it should also run on Linux.
 
+This script uses Python 3 syntax and will not run with Python 2.X!
+
 ## Installation
 
-Copy the content of this repository into an empty directory and start the execution from here.
+Just clone this repository or download one of the released archives and start the execution from here.
 
 ## Configuration
 
@@ -42,6 +44,11 @@ python SmartTemperatureTower.py -l printer
 python SmartTemperatureTower.py -l print
 python SmartTemperatureTower.py -l filament
 ```
+## How to print this
+
+Take the resulting GCODE file and upload it to your printer. That's it!
+
+**NOTE:** *During the print, the first 2 layers are printed with the default temperature from the filament ini file to ensure proper bed adhesion.*
 
 ## Result
 

@@ -239,14 +239,16 @@ if rc.returncode != 0:
     exit(1)
 print("- OK")
 
-floorZSize = getSTLZSize(requiredFiles["stlFloor"])
-floorLayer=round(float(floorZSize)/0.2)
-nextChange=0 # Zero is the first layer
-nextTemp=args.startTemp
 
 ###
 # STEP 3: Insert M104 (set temp) on floor changes
 ###
+floorZSize = getSTLZSize(requiredFiles["stlFloor"])
+floorLayer=round(float(floorZSize)/0.2)
+firstChange=2 # Start at layer 2, so we use default temp for bottom 2 layers
+nextChange=firstChange
+nextTemp=args.startTemp
+
 print("* Add M104 commands ", end="", flush=True)
 gcodeInput = open("CT_Temp.gcode", 'r')
 gcodeOutput = open(gcodeFile, 'w')
@@ -256,7 +258,10 @@ for LINE in gcodeInput:
         lineNum = int(re.sub('^;CT_LAYER:([0-9]+)','\\1',LINE))
         if lineNum == nextChange:
             gcodeOutput.write("M104 S" + str(nextTemp) + '\n')
-            nextChange+=floorLayer
+            if nextChange == firstChange:
+                nextChange=floorLayer
+            else:
+                nextChange+=floorLayer
             nextTemp+=args.tempStep    
 
 gcodeInput.close()
