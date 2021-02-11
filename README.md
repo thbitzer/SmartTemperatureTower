@@ -32,13 +32,13 @@ In the same ini file (under the [Profile] section), there are 3 Prusa-Slicer pro
 
 ## Usage:
 
-* Open a terminal window and change into the directory where the repo was downloaded.
+* Open a terminal window and change into the directory where the release package or repo was downloaded.
 * Execute: 
   `python SmartTemperatureTower.py -s 190 -e 240 -t 5`
 
 If all goes well, a file named "CalibrationTower-190-240-5.gcode" will be created. It can be uploaded to your 3D-printer.
 
-If you wish to list your PruseSlicer profiles to use them in the init file, please issue the following command:
+If you wish to list your PruseSlicer profiles to use them in the init file, please issue one of the following commands:
 ```
 python SmartTemperatureTower.py -l printer
 python SmartTemperatureTower.py -l print

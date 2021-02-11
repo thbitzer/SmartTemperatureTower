@@ -70,9 +70,33 @@ def toolNotFound(toolname,toolpath):
 # MAIN
 ###
 
+# Check completeness of this package
+if not checkRequiredFiles():
+    print()
+    print("ERROR: Cannot find all required files. Please make sure all files")
+    print("       listed below are in your current directory.\n")
+    for file in requiredFiles.keys():
+        print( "   * " + requiredFiles[file] )
+    print()
+    exit(1)
+
+# Commandline parsing
+parser = argparse.ArgumentParser(description="Create a gcode file to print a Heat Calibration Tower.")
+requiredNamed = parser.add_argument_group('required arguments')
+requiredNamed.add_argument('-s', '--startTemp', type=int, help="Temperature of the first (lowest) block.")
+requiredNamed.add_argument('-e', '--endTemp', type=int, help="Temperature of the last (highest) block.")
+requiredNamed.add_argument('-t', '--tempStep', type=int, help="Temperature change between blocks.")
+parser.add_argument('-p', '--gcodePrefix', help="Prefix for gcode output file")
+parser.add_argument('-l', '--profiles', nargs='?', help="List printer profiles (PROFILES=print, printer, filament)")
+parser.add_argument('--printIni', nargs='?', help="Print ini file to use (without directory part)")
+parser.add_argument('--printerIni', nargs='?', help="Printer ini file to use (without directory part)")
+parser.add_argument('--filamentIni', nargs='?', help="Filament ini file to use (without directory part)")
+args = parser.parse_args()
+
+
 ### Check for config file and override defaults if desired
 
-# Read configuration
+# Read configuration if existing
 cfgFile="SmartTemperatureTower.ini"
 if isfile(cfgFile):
     cfg = configparser.ConfigParser()
@@ -82,9 +106,21 @@ if isfile(cfgFile):
     cmdPrusaSlicer = getOpt(cfg["Path"], "prusa_slicer", cmdPrusaSlicer)
     iniPSD = getOpt(cfg["Path"], "prusa_slicer_ini", iniPSD)
 
-    printProfile = getOpt(cfg["Profile"], "print", "")
-    printerProfile = getOpt(cfg["Profile"], "printer", "")
-    filamentProfile = getOpt(cfg["Profile"], "filament", "")
+    # Use slicer profiles only from INI, if not yet supplied by cmdline
+    if args.printIni == None:
+        printProfile = getOpt(cfg["Profile"], "print", "")
+    else:
+        printProfile = args.printIni
+
+    if args.printerIni == None:    
+        printerProfile = getOpt(cfg["Profile"], "printer", "")
+    else:
+        printerProfile = args.printerIni
+
+    if args.filamentIni == None:
+        filamentProfile = getOpt(cfg["Profile"], "filament", "")
+    else:
+        filamentProfile = args.filamentIni
 
 # Check configured paths
 if not isfile(cmdOpenScad):
@@ -102,19 +138,34 @@ profiles = []
 if printProfile != "":
     printProfile = iniPSD+"\\print\\"+printProfile
     if not isfile(printProfile):
+        print()
         toolNotFound("Prusa-Slicer print profile", printProfile)
+        print()
+        print("Please use \"SmartTemperatureTower.py -l print\" to get available profiles.")
+        print()
+        exit(1)
     else:
         profiles.append(printProfile)
 if printerProfile != "":
     printerProfile = iniPSD+"\\printer\\"+printerProfile
     if not isfile(printerProfile):
+        print()
         toolNotFound("Prusa-Slicer printer profile", printerProfile)
+        print()
+        print("Please use \"SmartTemperatureTower.py -l printer\" to get available profiles.")
+        print()
+        exit(1)
     else:
         profiles.append(printerProfile)
 if filamentProfile != "":
     filamentProfile = iniPSD+"\\filament\\"+filamentProfile
     if not isfile(filamentProfile):
+        print()
         toolNotFound("Prusa-Slicer filament profile", filamentProfile)
+        print()
+        print("Please use \"SmartTemperatureTower.py -l filament\" to get available profiles.")
+        print()
+        exit(1)
     else:
         profiles.append(filamentProfile)
 
@@ -127,25 +178,6 @@ for profile in profiles:
         loadProfiles = "--load "+profile
     else:
         loadProfiles += " --load "+profile
-
-if not checkRequiredFiles():
-    print()
-    print("ERROR: Cannot find all required files. Please make sure all files")
-    print("       listed below are in your current directory.\n")
-    for file in requiredFiles.keys():
-        print( "   * " + requiredFiles[file] )
-    print()
-    exit(1)
-
-parser = argparse.ArgumentParser(description="Create a gcode file to print a Heat Calibration Tower.")
-requiredNamed = parser.add_argument_group('required arguments')
-requiredNamed.add_argument('-s', '--startTemp', type=int, help="Temperature of the first (lowest) block.")
-requiredNamed.add_argument('-e', '--endTemp', type=int, help="Temperature of the last (highest) block.")
-requiredNamed.add_argument('-t', '--tempStep', type=int, help="Temperature change between blocks.")
-parser.add_argument('-p', '--gcodePrefix', help="Prefix for gcode file")
-parser.add_argument('-l', '--profiles', nargs='?', help="List printer profiles (PROFILES=print, printer, filament)")
-args = parser.parse_args()
-
 
 # List printer profiles
 if args.profiles != None:
