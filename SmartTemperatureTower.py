@@ -20,11 +20,11 @@ import sys
 ### Defaults section
 
 # Path to OpenSCAD and Prusa Slicer
-cmdOpenScad = "C:\\Program Files\\OpenSCAD\\openscad.com"
-cmdPrusaSlicer = "C:\\Program Files\\Prusa3D\\PrusaSlicer\\prusa-slicer-console.exe"
+cmdOpenScad = "'/usr/bin/openscad'"
+cmdPrusaSlicer = "/home/andre/opt/PrusaSlicer-2.3.1+linux-x64-202104161339.AppImage"
 
 # Open Prusa-Slicer -> Help -> Show Configuration Folder
-iniPSD = os.environ["APPDATA"]+"\\PrusaSlicer"
+iniPSD = os.environ["HOME"]+"/.config/PrusaSlicer"
 
 # All required data files we need to build a Calibration Tower
 requiredFiles = {
@@ -123,8 +123,10 @@ if isfile(cfgFile):
         filamentProfile = args.filamentIni
 
 # Check configured paths
-if not isfile(cmdOpenScad):
-    toolNotFound("OpenSCAD tool",cmdPrusaSlicer)
+if not os.path.isfile(cmdOpenScad):
+    print(cmdOpenScad)
+    print(isfile(cmdOpenScad))
+    toolNotFound("OpenSCAD tool",cmdOpenScad)
     exit(1)
 if not isfile(cmdPrusaSlicer):
     toolNotFound("Prusa-Slicer tool",cmdPrusaSlicer)
@@ -136,7 +138,7 @@ if not isdir(iniPSD):
 # Check configured profiles
 profiles = []
 if printProfile != "":
-    printProfile = iniPSD+"\\print\\"+printProfile
+    printProfile = iniPSD+"/print/"+printProfile
     if not isfile(printProfile):
         print()
         toolNotFound("Prusa-Slicer print profile", printProfile)
@@ -147,7 +149,7 @@ if printProfile != "":
     else:
         profiles.append(printProfile)
 if printerProfile != "":
-    printerProfile = iniPSD+"\\printer\\"+printerProfile
+    printerProfile = iniPSD+"/printer/"+printerProfile
     if not isfile(printerProfile):
         print()
         toolNotFound("Prusa-Slicer printer profile", printerProfile)
@@ -158,7 +160,7 @@ if printerProfile != "":
     else:
         profiles.append(printerProfile)
 if filamentProfile != "":
-    filamentProfile = iniPSD+"\\filament\\"+filamentProfile
+    filamentProfile = iniPSD+"/filament/"+filamentProfile
     if not isfile(filamentProfile):
         print()
         toolNotFound("Prusa-Slicer filament profile", filamentProfile)
@@ -191,7 +193,7 @@ if args.profiles != None:
             print("       * "+path)
         print()
         sys.exit(1)
-    path=iniPSD+"\\"+args.profiles
+    path=iniPSD+"/"+args.profiles
     iniarr = os.listdir(path)
     print()
     print("Printer profiles available in directory:")
@@ -214,8 +216,8 @@ else:
     gcodePrefix = args.gcodePrefix
 
     # We don't want a full filename with extension for the -p (prefix) parameter
-    if re.search('\\.', args.gcodePrefix):
-        ext=re.sub('^.*(\\..*)$', '\\1', args.gcodePrefix)
+    if re.search('/.', args.gcodePrefix):
+        ext=re.sub('^.*(/..*)$', '/1', args.gcodePrefix)
         print("ERROR: The -p / --gcodePrefix parameter contains an extension ("+ext+").")
         exit(1)
         

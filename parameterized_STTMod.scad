@@ -8,9 +8,9 @@
 
 // Configure the min&max temp + floor-to-floor temp step 
 // NOTICE: sign of tstep is recalculated, no need to provide a negative value
-tfirst=205;
-tlast=195;
-tstep=2;
+tfirst=230;
+tlast=190;
+tstep=5;
 
 tstep1 = tfirst>tlast ?  abs(tstep)*-1 : abs(tstep);
 // Instantiate the "base" and move it to origin
