@@ -1,3 +1,0 @@
-Sources:
-1. SCAD + STL files - https://www.thingiverse.com/thing:3485745
-2. setLayerTemperatur.py - https://www.thingiverse.com/thing:2615842/files
